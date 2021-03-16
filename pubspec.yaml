@@ -1,0 +1,47 @@
+name: demo
+description: A new Flutter project.
+version: 1.2.0+1
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  dio: ^3.0.9
+  groovin_widgets: ^1.6.0
+  flutter:
+    sdk: flutter
+  url_launcher: ^5.5.0
+  titled_navigation_bar: ^4.1.0
+  font_awesome_flutter: ^8.8.1
+  shared_preferences: any
+  flutter_spinkit: ^4.1.2+1
+  settings_ui: ^0.3.0
+  fluro: ^1.6.3
+  fluttertoast: ^7.0.2
+  giffy_dialog: ^1.8.0
+  mailer: ^3.0.4
+  flushbar: ^1.10.4
+  flip_card: ^0.4.4  
+  package_info: ^0.4.1
+  flutter_localizations:
+    sdk: flutter
+  image_picker: ^0.6.7+4
+  share: ^0.6.4+3
+  flutter_beautiful_popup: ^1.5.0
+  pull_to_refresh: ^1.6.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+  - assets/images/avatar.jpeg
+  - assets/images/avatar.jpg
+  - assets/images/bef.jpg
+  - assets/images/vip.png
+  - assets/images/load.gif

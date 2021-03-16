@@ -1,0 +1,133 @@
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterRoot = localProperties.getProperty('flutter.sdk')
+if (flutterRoot == null) {
+    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+}
+
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+if (flutterVersionCode == null) {
+    flutterVersionCode = '1'
+}
+
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+if (flutterVersionName == null) {
+    flutterVersionName = '1.0'
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+def keystorePropertiesFile = rootProject.file("key.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+android {
+    compileSdkVersion 28
+
+    aaptOptions.cruncherEnabled = false //防止androidx
+    aaptOptions.useNewCruncher = false //防止androidx 就可以了，另外flutter 的启动页网上很多但都是debug模式真正的是在values/style里面
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+
+    defaultConfig {
+        ndk {
+            //设置支持的SO库架构
+            abiFilters "armeabi-v7a"
+            //abiFilters "armeabi","armeabi-v7a","arm64-v8a","x86"
+        }
+        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        applicationId "cc.lanzou.fastsearch"
+        minSdkVersion 16
+        targetSdkVersion 28
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+    release {
+        keyAlias keystoreProperties['keyAlias']
+        keyPassword keystoreProperties['keyPassword']
+        storeFile file(keystoreProperties['storeFile'])
+        storePassword keystoreProperties['storePassword']
+    }
+    }
+    buildTypes {
+        debug {
+            ndk {
+                abiFilters "armeabi-v7a", "x86"
+                //abiFilters "armeabi","armeabi-v7a","arm64-v8a","x86"
+            }
+        }
+        release {
+            ndk{
+                abiFilters "armeabi-v7a"
+            }
+            signingConfig signingConfigs.release
+        }
+    }
+}
+
+repositories {
+    maven { url "http://mvn.gt.igexin.com/nexus/content/repositories/releases/" }
+}
+
+flutter {
+    source '../..'
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+
+    project.configurations.all {
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == 'com.android.support' && !details.requested.name.contains('multidex') ) {
+                details.useVersion "27.1.1"
+            }else if(details.requested.group == "androidx.versionedparcelable") {
+                details.useVersion "1.0.0-rc01"
+            }else if(details.requested.group == "androidx.lifecycle") {
+                details.useVersion "2.0.0-rc01"
+            }else if(details.requested.group == "androidx.core") {
+                details.useVersion "1.0.0-rc01"
+            }
+        }
+    }
+    
+configurations.all {
+    resolutionStrategy {
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == 'androidx.core') {
+                details.useVersion "1.0.2"
+            }
+            if (details.requested.group == 'androidx.lifecycle') {
+                details.useVersion "2.0.0"
+            }
+            if (details.requested.group == 'androidx.versionedparcelable') {
+                details.useVersion "1.0.0"
+            }
+            if (details.requested.group == 'androidx.fragment') {
+                details.useVersion "1.0.0"
+            }
+            if (details.requested.group == 'androidx.appcompat') {
+                details.useVersion "1.0.1"
+            }
+        }
+    }
+}
+}
